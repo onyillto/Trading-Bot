@@ -1,0 +1,21 @@
+# Ignore virtual environment
+.venv/
+
+# Ignore large data files or model weights
+*.h5
+*.hdf5
+*.csv
+*.pkl
+*.npz
+*.joblib
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore environment files
+.env
