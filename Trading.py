@@ -11,7 +11,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 # Updated CORS to allow your IP address
-CORS(app, origins=["http://localhost:3000", "http://192.168.1.222:3000", "http://127.0.0.1:3000"])
+CORS(app, origins=["http://localhost:3000", "http://192.168.1.222:3000", "http://127.0.0.1:3000","https://forex-bot-react-js.vercel.app"])
 
 
 def calculate_enhanced_indicators(df):
