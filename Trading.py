@@ -10,9 +10,47 @@ import json
 from datetime import datetime
 
 app = Flask(__name__)
-# Updated CORS to allow your IP address
-CORS(app, origins=["http://localhost:3000", "http://192.168.1.222:3000", "http://127.0.0.1:3000","https://forex-bot-react-js.vercel.app"])
 
+# FIXED CORS Configuration - Allow all origins for now, then restrict
+CORS(app,
+     origins=["*"],  # Allow all origins temporarily
+     methods=["GET", "POST", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
+     supports_credentials=False
+)
+
+# Alternative more restrictive CORS (use this after testing)
+# CORS(app,
+#      origins=[
+#          "http://localhost:3000",
+#          "http://192.168.1.222:3000",
+#          "http://127.0.0.1:3000",
+#          "https://forex-bot-react-js.vercel.app",
+#          "https://*.vercel.app"  # Allow all Vercel subdomains
+#      ],
+#      methods=["GET", "POST", "OPTIONS"],
+#      allow_headers=["Content-Type", "Authorization"],
+#      supports_credentials=False
+# )
+
+# Add manual CORS headers as backup
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'false')
+    return response
+
+# Handle preflight OPTIONS requests
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        response = jsonify({'message': 'OK'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
 
 def calculate_enhanced_indicators(df):
     """Calculate comprehensive technical indicators with safe Series handling"""
@@ -369,13 +407,20 @@ def home():
             "/api/pairs (GET)",
             "/api/indicators (GET)",
             "/api/health (GET)"
-        ]
+        ],
+        "cors": "enabled",
+        "status": "healthy"
     })
 
 
 @app.route('/api/health')
 def health():
-    return jsonify({"status": "healthy", "timestamp": datetime.now().isoformat()})
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "cors": "enabled",
+        "server": "render"
+    })
 
 
 @app.route('/api/pairs')
